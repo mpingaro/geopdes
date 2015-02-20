@@ -1,0 +1,64 @@
+% OP_FOURTH_ORDER_DIFFUSION_TP: assemble the stiffness matrix 
+% A = [a(i,j)], a(i,j) = (epsilon2(x)*grad grad u_j, grad grad v_i) + (epsilon1(x)*grad u_j,grad v_i) , exploiting the tensor product structure.
+%
+%   mat = op_fourth_order_diffusion_tp (spu, spv, msh, epsilon);
+%   [rows, cols, values] = op_fourth_order_diffusion_tp (spu, spv, msh, epsilon);
+%
+% INPUT:
+%
+%   spu:     class representing the space of trial functions (see sp_bspline_2d)
+%   spv:     class representing the space of test functions (see sp_bspline_2d)
+%   msh:     class defining the domain partition and the quadrature rule (see msh_2d)
+%   epsilon: function handle to compute the diffusion coefficient
+%
+% OUTPUT:
+%
+%   mat:    assembled stiffness matrix
+%   rows:   row indices of the nonzero entries
+%   cols:   column indices of the nonzero entries
+%   values: values of the nonzero entries
+% 
+% 
+%    This program is free software: you can redistribute it and/or modify
+%    it under the terms of the GNU General Public License as published by
+%    the Free Software Foundation, either version 3 of the License, or
+%    (at your option) any later version.
+
+%    This program is distributed in the hope that it will be useful,
+%    but WITHOUT ANY WARRANTY; without even the implied warranty of
+%    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%    GNU General Public License for more details.
+%
+%    You should have received a copy of the GNU General Public License
+%    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+function varargout = op_fourth_order_diffusion_tp (space1, space2, msh, coeff1, coeff2)
+
+  A = spalloc (space2.ndof, space1.ndof, 3*space1.ndof);
+
+  ndim = numel (msh.qn);
+
+  for iel = 1:msh.nel_dir(1)
+    msh_col = msh_evaluate_col (msh, iel);
+    sp1_col = sp_evaluate_col (space1, msh_col, 'value', false, 'gradient', true, 'hessian', true);
+    sp2_col = sp_evaluate_col (space2, msh_col, 'value', false, 'gradient', true, 'hessian', true);
+
+    for idim = 1:ndim
+      x{idim} = reshape (msh_col.geo_map(idim,:,:), msh_col.nqn, msh_col.nel);
+    end
+
+    
+    A = A + op_gradu_gradv (sp1_col, sp2_col, msh_col, coeff1(x{:}))...
+        + op_gradgradu_gradgradv (sp1_col, sp2_col , msh_col, coeff2(x{:}));
+  end
+
+  if (nargout == 1)
+    varargout{1} = A;
+  elseif (nargout == 3)
+    [rows, cols, vals] = find (A);
+    varargout{1} = rows;
+    varargout{2} = cols;
+    varargout{3} = vals;
+  end
+
+end
