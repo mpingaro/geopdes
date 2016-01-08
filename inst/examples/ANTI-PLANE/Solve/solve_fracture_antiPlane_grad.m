@@ -62,7 +62,7 @@ for iside = nmnn_sides
      
       sp_boundary = sp_side_col;
       
-      bordo = copp .* op_Bordo_Fracture(sp_boundary, sp_normal, msh_side);
+      bordo = copp .* op_Bordo_Fracture_grad(sp_boundary, sp_normal, msh_side);
       %bordo2 = copp .* op_Bordo_Fracture_grad(sp_boundary, sp_boundary, msh_side);
             
    elseif iside == 2
@@ -114,7 +114,7 @@ for iside = nmnn_sides
       
       sp_boundary = sp_side_row;
       
-      bordo = copp .* op_Bordo_Fracture(sp_boundary, sp_normal, msh_side);
+      bordo = copp .* op_Bordo_Fracture_grad(sp_boundary, sp_normal, msh_side);
    end
    
    %stiff_mat2 = stiff_mat2 + copp .* op_Bordo_Fracture(sp_boundary, sp_normal, msh_side);
