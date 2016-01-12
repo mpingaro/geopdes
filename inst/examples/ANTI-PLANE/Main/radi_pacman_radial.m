@@ -50,7 +50,7 @@ problem_data.h = @boundary_pacman_mixed_bc_h_drchlt_radial; % Displacement
 %clear method_data
 method_data.degree     = [3 3];       % Degree of the splines
 method_data.regularity = [2 2];       % Regularity of the splines
-method_data.nsub       = [20 20];     % Number of subdivisions
+method_data.nsub       = [100 100];     % Number of subdivisions
 method_data.nquad      = [4 4];       % Points for the Gaussian quadrature rule
 
 % CALL TO THE SOLVER

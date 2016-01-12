@@ -8,16 +8,16 @@ clc
 % Costanti di secondo gradiente
 KIII = 0.5;   % Se varia cambiare : boundary_pacman_mixed_bc_h_drchlt  !!!!
 mu = 1;
-eta = -0.9;
-l = 0.1;
-Radius = 100*l; % Radius
+eta = 0.0;
+l = 0.05;
+%Radius = 100*l; % Radius
+Radius = 10;
 lt = l*sqrt(1+eta);
 ls = l/sqrt(2);
 
 c1 = 1.0;
 c2 = lt*lt/2;
 c3 = ls*ls - lt*lt/2;
-
 points = 500;
 % Definizione della geometria
 knots = {[0 0 0 1 1 1],[0 0 0 1 1 1]};
@@ -35,10 +35,18 @@ coefs(:, 3, 3) = [-1, 0, 0, 1];
 srf = nrbmak(coefs, knots);
 srf = nrbtform(srf, vecscale([Radius Radius 0]));
 
+% % PLOT IN MATLAB.
+% % Plottagio geometria e control points
+% figure
+% nrbctrlplot(srf)
+% % Plottaggio raffinamento
+% figure
+% nrbkntplot(srf)
+
 % Elevazione d'ordine
 % srf = nrbdegelev(srf,[0 1]);
 % k-raffinament
-new_knots = linspace (0, 1, 200);
+new_knots = linspace (0, 1, 10);
 %new_knots = [0,logspace(-3,0,10)];
 %new_knots = [ones(1,10)-logspace(0, -3,10),1];
 
@@ -59,9 +67,9 @@ problem_data.geo_name = srf_r;
 % 3 Lato orizzontale destro;    |---> u_d = 0;
 % 4 Lato arco sinistro          |---> u_d = u_far;
 
-problem_data.nmnn_sides  = [];              % Define Neumann conditions
-problem_data.drchlt_sides_u= [1, 3, 4];     % Define Dirichlet conditions u
-problem_data.drchlt_sides_r= [1, 3, 4];     % Define Dirichlet condition du/dn
+problem_data.nmnn_sides  = [];           % Define Neumann conditions
+problem_data.drchlt_sides_u= [1, 3, 4];  % Define Dirichlet conditions u
+problem_data.drchlt_sides_r= [];  % Define Dirichlet condition du/dn
 
 % ----------------------------------------------------------------------- %
 % Physical parameters

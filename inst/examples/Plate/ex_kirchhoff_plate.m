@@ -3,14 +3,16 @@
 %
 %
 %--------------------------------------------------------------------------
-clear all; close all; clc;
+clear; 
+close all; 
+clc;
 %--------------------------------------------------------------------------
 % DEFINIZIONE GEOMETRIA
 % Geometria iniziale
 base = 1; altezza = 1;
 % Costanti elastiche
 E  =  1;                           % Young modulus   
-nu = 0.3;                          % Poisson modulus
+nu = 0.0;                          % Poisson modulus
 %tr = 0.2;                         % Spessore piastra         
 %D  = E*tr*tr*tr/(12*(1-nu*nu));   % Flexural rigidity of the plate
 D = 1;
@@ -29,8 +31,8 @@ problem_data.geo_name = 'plate_KirchhoffClamped.txt';
 %--------------------------------------------------
 % BOUNDARY CONDITIONS 
 problem_data.nmnn_sides  = [];          % Define Neumann conditions
-problem_data.drchlt_sides_u= [1 2 3 4];     % Define Dirichlet conditions u
-problem_data.drchlt_sides_r= [1 2 3 4] ;    % Define Dirichlet condition du/dn
+problem_data.drchlt_sides_u= [1 2];     % Define Dirichlet conditions u
+problem_data.drchlt_sides_r= [1 2] ;    % Define Dirichlet condition du/dn
 
 % Physical parameters
 problem_data.c_diff  = @(x, y) D*ones(size(x));
@@ -42,18 +44,18 @@ problem_data.f = @(x, y) p*ones(size(x));
 %problem_data.g = @(x, y, ind) -ones(size(x));
 
 problem_data.h = @(x, y, ind) zeros(size(x));
-problem_data.g = @(x, y, ind) -ones(size(x));
+problem_data.g = @boundary_plate_g_drchlt;
 %--------------------------------------------------
 % CHOICE OF THE DISCRETIZATION PARAMETERS
 %clear method_data
 method_data.degree     = [2 2];   % Degree of the splines
 method_data.regularity = [1 1];   % Regularity of the splines
-method_data.nsub       = [30 30]; % Number of subdivisions
+method_data.nsub       = [10 10]; % Number of subdivisions
 method_data.nquad      = [3 3];   % Points for the Gaussian quadrature rule
 %-------------------------------------------------
 % CALL TO THE SOLVER
 [geometry, msh, space, u] =...
-    solve_bilaplace_GRADGRAD_2d_iso (problem_data, method_data);
+    solve_plate_kirchhoff (problem_data, method_data);
 
     % solve_bilaplace_2d_NURBS_iso (problem_data, method_data);
     % solve_bilaplace_GRADGRAD_2d_iso (problem_data, method_data);
@@ -106,3 +108,18 @@ soluz_anal = 0.00126*p*min(base,altezza)^4/D; % clamped
 fprintf('Soluzione computata = %s \n',max_spost);
 fprintf('Soluzione analitica = %s \n',soluz_anal);
 %-----------------------------------------------------
+
+%% Soluzione analitica:
+x = 0:0.001:base;
+sol = (pi/4/base).*x.^3-(pi/4).*x.^2;
+
+le(:,1) = X(:,101);
+le(:,2) = eu(:,101);
+
+figure, 
+plot(le(:,1), le(:,2),'-o')
+hold on
+plot(x, sol)
+hold off
+
+
