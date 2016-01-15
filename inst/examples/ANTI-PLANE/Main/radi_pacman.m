@@ -9,7 +9,7 @@ clc
 KIII = 0.5;   % Se varia cambiare : boundary_pacman_mixed_bc_h_drchlt  !!!!
 mu = 1;
 eta = 0.0;
-l = 0.05;
+l = 0.01;
 %Radius = 100*l; % Radius
 Radius = 10;
 lt = l*sqrt(1+eta);
@@ -46,7 +46,7 @@ srf = nrbtform(srf, vecscale([Radius Radius 0]));
 % Elevazione d'ordine
 % srf = nrbdegelev(srf,[0 1]);
 % k-raffinament
-new_knots = linspace (0, 1, 10);
+new_knots = linspace (0, 1, 200);
 %new_knots = [0,logspace(-3,0,10)];
 %new_knots = [ones(1,10)-logspace(0, -3,10),1];
 
@@ -68,8 +68,8 @@ problem_data.geo_name = srf_r;
 % 4 Lato arco sinistro          |---> u_d = u_far;
 
 problem_data.nmnn_sides  = [];           % Define Neumann conditions
-problem_data.drchlt_sides_u= [1, 3, 4];  % Define Dirichlet conditions u
-problem_data.drchlt_sides_r= [];  % Define Dirichlet condition du/dn
+problem_data.drchlt_sides_u= [1,3,4];  % Define Dirichlet conditions u
+problem_data.drchlt_sides_r= [1,3,4];  % Define Dirichlet condition du/dn
 
 % ----------------------------------------------------------------------- %
 % Physical parameters
