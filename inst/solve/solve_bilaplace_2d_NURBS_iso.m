@@ -102,6 +102,82 @@ for iside = nmnn_sides
   rhs(sp_side.dofs) = rhs(sp_side.dofs) + op_f_v (sp_side, msh_side, gval);
 end 
 
+% Apply Neumann boundary conditions for the boundary terms
+stiff_mat_bordo = zeros(space.ndof, space.ndof);
+for iside = bound_sides
+  msh_side = msh_eval_boundary_side (msh, iside);
+   
+  if iside == 1
+      rule_side = rule;
+      rule_side{(1)} = [-1; 2];
+      [qn, qw] = msh_set_quad_nodes (zeta, rule_side);
+      msh_bound = msh_2d (zeta, qn, qw, geometry,'der2', true, 'der3', true);
+      space_side = sp_nurbs_2d (geometry.nurbs, msh_bound);
+      msh_col = msh_evaluate_col(msh_bound,1);
+      
+      msh_col.normal = msh_side.normal;                  % Import of structure normal.      
+      sp_side_col = sp_evaluate_col(space_side,msh_col,'gradient', true, 'hessian', true, 'der3', true);
+      % Normal and Tangent derivatives 
+      sp_normal = sp_normal_tang(sp_side_col, msh_col, 'gradient', true,'hessian', true, 'der3', true);
+      sp_boundary = sp_side_col;
+      
+      bordo = op_bordo_plate_laplace(sp_boundary, sp_normal, msh_side, poisson);
+            
+   elseif iside == 2
+      rule_side = rule;
+      rule_side{(1)} = [1; 2];
+      [qn, qw] = msh_set_quad_nodes (zeta, rule_side);
+      msh_bound = msh_2d (zeta, qn, qw, geometry,'der2', true, 'der3', true);
+      space_side = sp_nurbs_2d (geometry.nurbs, msh_bound);
+      msh_col = msh_evaluate_col(msh_bound,msh.nel_dir(1));
+     
+      msh_col.normal = msh_side.normal;                  % Import of structure normal.
+      sp_side_col = sp_evaluate_col(space_side,msh_col,'gradient', true, 'hessian', true, 'der3', true);
+      % Normal and Tangent derivatives  
+      sp_normal = sp_normal_tang(sp_side_col, msh_col, 'gradient', true,'hessian', true, 'der3', true);
+      sp_boundary = sp_side_col;
+ 
+      bordo = op_bordo_plate_laplace(sp_boundary, sp_normal, msh_side, poisson);
+  
+  elseif iside == 3
+      rule_side = rule;
+      rule_side{(2)} = [-1; 2];
+      [qn, qw] = msh_set_quad_nodes (zeta, rule_side);
+      msh_bound = msh_2d (zeta, qn, qw, geometry,'der2', true, 'der3', true);
+      space_side = sp_nurbs_2d (geometry.nurbs, msh_bound);
+      msh_row = msh_evaluate_row(msh_bound,1);
+      msh_row.normal = msh_side.normal;                  % Import of structure normal.
+      
+      sp_side_row = sp_evaluate_row(space_side,msh_row,'gradient', true, 'hessian', true, 'der3', true);
+      % Normal and Tangent derivatives
+      sp_normal = sp_normal_tang(sp_side_row, msh_row, 'gradient', true,'hessian', true, 'der3', true);
+      sp_boundary = sp_side_row;
+      
+      bordo = op_bordo_plate_laplace(sp_boundary, sp_normal, msh_side, poisson);
+      
+   elseif iside == 4
+      rule_side = rule;
+      rule_side{(2)} = [1; 2];
+      [qn, qw] = msh_set_quad_nodes (zeta, rule_side);
+      msh_bound = msh_2d (zeta, qn, qw, geometry,'der2', true, 'der3', true);
+      space_side = sp_nurbs_2d (geometry.nurbs, msh_bound);
+      msh_row = msh_evaluate_row(msh_bound,msh.nel_dir(2));
+      msh_row.normal = msh_side.normal;                  % Import of structure normal.
+      
+      sp_side_row = sp_evaluate_row(space_side,msh_row,'gradient', true, 'hessian', true, 'der3', true);
+      % Normal and Tangent derivatives
+      sp_normal = sp_normal_tang(sp_side_row, msh_row, 'gradient', true,'hessian', true, 'der3', true);
+      
+      sp_boundary = sp_side_row;
+      
+      bordo = op_bordo_plate_laplace(sp_boundary, sp_normal, msh_side, poisson);
+  end
+  stiff_mat_bordo = stiff_mat_bordo + bordo; 
+end
+
+% Add to stiffness matrix the boudary terms
+stiff_mat = stiff_mat + stiff_mat_bordo;
+
 % Apply Dirichlet boundary conditions
 u = zeros (space.ndof, 1);
 [u_drchlt, drchlt_dofs_u] = sp_drchlt_l2_proj (space, msh, h, drchlt_sides_u);
@@ -120,5 +196,4 @@ rhs(int_dofs) = rhs(int_dofs) - stiff_mat(int_dofs, drchlt_dofs_u)*u_drchlt...
 
 % Solve the linear system
 u(int_dofs) = stiff_mat(int_dofs, int_dofs) \ rhs(int_dofs);
-
 end

@@ -39,7 +39,7 @@ function mat = op_laplaceu_laplacev (spu, spv, msh, coeff)
    
    laplaceu = reshape (spu.shape_function_hessians, spu.ncomp, [], msh.nqn, spu.nsh_max, msh.nel);
    laplacev = reshape (spv.shape_function_hessians, spv.ncomp, [], msh.nqn, spv.nsh_max, msh.nel);
-   
+  
    ndir = size (laplaceu, 2);
  
    for iel = 1:msh.nel

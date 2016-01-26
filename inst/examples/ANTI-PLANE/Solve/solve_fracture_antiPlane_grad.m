@@ -33,7 +33,6 @@ stiff_mat1 = op_fracture_antiPlaneGRAD_tp (space, space, msh, c_diff, d_diff);
 rhs       = op_f_v_tp (space, msh, f);
 
 % Apply Neumann boundary conditions
-
 stiff_mat2 = zeros(space.ndof, space.ndof);
 for iside = nmnn_sides
   msh_side = msh_eval_boundary_side (msh, iside);

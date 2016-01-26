@@ -9,11 +9,12 @@ clc
 KIII = 0.5;   % Se varia cambiare : boundary_pacman_mixed_bc_h_drchlt  !!!!
 mu = 1;
 eta = 0.0;
-l = 0.01;
+l = 0.10;
 %Radius = 100*l; % Radius
 Radius = 10;
-lt = l*sqrt(1+eta);
+%lt = l*sqrt(1+eta);
 ls = l/sqrt(2);
+lt = 0;
 
 c1 = 1.0;
 c2 = lt*lt/2;
@@ -46,7 +47,7 @@ srf = nrbtform(srf, vecscale([Radius Radius 0]));
 % Elevazione d'ordine
 % srf = nrbdegelev(srf,[0 1]);
 % k-raffinament
-new_knots = linspace (0, 1, 200);
+new_knots = linspace (0, 1, 20);
 %new_knots = [0,logspace(-3,0,10)];
 %new_knots = [ones(1,10)-logspace(0, -3,10),1];
 
