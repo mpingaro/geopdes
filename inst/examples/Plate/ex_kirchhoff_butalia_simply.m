@@ -1,5 +1,5 @@
 % EX Kirchhoff.
-% Trapezoidal plate simply supported in two opposite edge 
+% Trapezoidal plate simply supported in two opposite edges 
 % and uniformaly distributed load.
 clear; 
 close all; 
@@ -60,8 +60,8 @@ method_data.nquad      = [3 3];   % Points for the Gaussian quadrature rule
 %-------------------------------------------------
 % CALL TO THE SOLVER
 [geometry, msh, space, u] =...
-    solve_bilaplace_GRADGRAD_2d_iso (problem_data, method_data);
-    
+    solve_plate_kirchhoff (problem_data, method_data);
+   
     % solve_bilaplace_2d_NURBS_iso (problem_data, method_data);
     % solve_bilaplace_GRADGRAD_2d_iso (problem_data, method_data);
     % solve_plate_kirchhoff (problem_data, method_data);
@@ -100,8 +100,9 @@ w_y = eu((pts-1)/2 + 1, :)./(p*a^4/D); % middle line y-y
 % Save results
 ang_d= rad2deg(ang);
 val = num2str(ang_d);
+name = 'trapezoidal_kirchhoff_ang_';
 
-file_name_1 = strcat('trapezoidal_gradient_ang_', val, '_middle_x.txt');
+file_name_1 = strcat(name, val, '_middle_x.txt');
 f = fopen(file_name_1, 'w');
 fprintf(f,'normalized coordinates v.s. normalized transverse displacement \n');
 for i=1:pts
@@ -109,7 +110,7 @@ for i=1:pts
 end
 fclose(f);
 
-file_name_2 = strcat('trapezoidal_gradient_ang_', val, '_middle_y.txt');
+file_name_2 = strcat(name, val, '_middle_y.txt');
 ff = fopen(file_name_2, 'w');
 fprintf(ff,'normalized coordinates v.s. normalized transverse displacement \n');
 for i=1:pts

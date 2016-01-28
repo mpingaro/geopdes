@@ -59,7 +59,7 @@ method_data.nquad      = [3 3];   % Points for the Gaussian quadrature rule
 %-------------------------------------------------
 % CALL TO THE SOLVER
 [geometry, msh, space, u] =...
-    solve_plate_kirchhoff (problem_data, method_data);
+    solve_bilaplace_GRADGRAD_2d_iso (problem_data, method_data);
     
     % solve_bilaplace_2d_NURBS_iso (problem_data, method_data);
     % solve_bilaplace_GRADGRAD_2d_iso (problem_data, method_data);
@@ -93,19 +93,37 @@ max_spost  = max(max(eu));
 fprintf('Soluzione computata = %s \n',max_spost);
 x = (0:2*a/(pts-1):2*a)./a;
 
-% w = eu(:,pts)./(p*a^4/D); % line D-C
-w = eu(:, (pts-1)/2 + 1)./(p*a^4/D); % middle line
-% w = eu(pts,:)./(p*a^4/D); % line B-C
+w_dc = eu(:,pts)./(p*a^4/D);            % line D-C
+w_m  = eu(:, (pts-1)/2 + 1)./(p*a^4/D); % middle line
+w_bc = eu(pts,:)./(p*a^4/D);            % line B-C
 
 % Save results
 ang_d= rad2deg(ang);
 val = num2str(ang_d);
-file_name = strcat('trapezoidal_kirchhoff_ang_', val, '_middle.txt');
-f = fopen(file_name, 'w');
+name = 'trapezoidal_gradient_ang_';
+%
+file_name_1 = strcat(name, val, '_DC.txt');
+f = fopen(file_name_1, 'w');
 fprintf(f,'normalized coordinates v.s. normalized transverse displacement \n');
 for i=1:pts
-    fprintf(f, '%6.4f \t %6.5e \n', x(i), w(i));
+    fprintf(f, '%6.4f \t %6.5e \n', x(i), w_dc(i));
 end
 fclose(f);
+%
+file_name_2 = strcat(name, val, '_middle.txt');
+ff = fopen(file_name_2, 'w');
+fprintf(ff,'normalized coordinates v.s. normalized transverse displacement \n');
+for i=1:pts
+    fprintf(ff, '%6.4f \t %6.5e \n', x(i), w_m(i));
+end
+fclose(ff);
+%
+file_name_3 = strcat(name, val, '_BC.txt');
+fff = fopen(file_name_3, 'w');
+fprintf(fff,'normalized coordinates v.s. normalized transverse displacement \n');
+for i=1:pts
+    fprintf(fff, '%6.4f \t %6.5e \n', x(i), w_bc(i));
+end
+fclose(fff);
 
 end
