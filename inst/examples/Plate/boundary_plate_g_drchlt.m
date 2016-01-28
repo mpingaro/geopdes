@@ -4,7 +4,7 @@ function h = boundary_plate_g_drchlt (x,y,ind)
     case 1
       h = 0*x.*y;
     case 2
-      h = pi/4+0.*x.*y;
+      h = -pi/4+0.*x.*y;
     case 3
       h = 0.*x.*y;
     case 4

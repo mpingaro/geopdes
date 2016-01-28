@@ -29,7 +29,6 @@
 %    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function new_geom = geo_deform (u, space, geometry);
-  keyboard
   if (~isfield (geometry, 'nurbs'))
     error ('geo_deform: only NURBS-based geometries are allowed')
   end

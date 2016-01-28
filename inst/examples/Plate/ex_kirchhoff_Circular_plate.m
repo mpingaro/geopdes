@@ -43,20 +43,22 @@ srf_r = nrbkntins(srf_i, {new_knots, new_knots});
 problem_data.geo_name = srf_r;
 %--------------------------------------------------
 % BOUNDARY CONDITIONS 
-problem_data.nmnn_sides  = [1 2 3 4];     % Define Neumann conditions
-problem_data.drchlt_sides_u= [1 2 3 4];   % Define Dirichlet conditions
-problem_data.drchlt_sides_r= [];          % Bordi incastrati
+problem_data.nmnn_sides     = [];        % Define Neumann conditions
+problem_data.bound_sides    = []; % Define free edges (Boundary integrals)
+problem_data.drchlt_sides_u = [1 2 3 4]; % Define Dirichlet conditions
+problem_data.drchlt_sides_r = [];        % Bordi incastrati
 % Physical parameters
+problem_data.poisson = nu;
 problem_data.c_diff  = @(x, y) D*ones(size(x));
 % Source and boundary terms
 problem_data.f = @(x, y) p*ones(size(x));
 problem_data.g = @(x, y, ind) zeros(size(x));
 problem_data.h = @(x, y, ind) zeros(size(x));
 % Derivate prime delle normali.
-problem_data.dnorm_x_x = @test_circular_plate_couple_dnx_x;
-problem_data.dnorm_x_y = @test_circular_plate_couple_dnx_y;
-problem_data.dnorm_y_x = @test_circular_plate_couple_dny_x;
-problem_data.dnorm_y_y = @test_circular_plate_couple_dny_y;
+% problem_data.dnorm_x_x = @test_circular_plate_couple_dnx_x;
+% problem_data.dnorm_x_y = @test_circular_plate_couple_dnx_y;
+% problem_data.dnorm_y_x = @test_circular_plate_couple_dny_x;
+% problem_data.dnorm_y_y = @test_circular_plate_couple_dny_y;
 %--------------------------------------------------
 % CHOICE OF THE DISCRETIZATION PARAMETERS
 %clear method_data

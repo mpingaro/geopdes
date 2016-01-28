@@ -2,9 +2,9 @@ function h = boundary_plate_h_drchlt (x,y,ind)
   
   switch (ind)
     case 1
-      h = 1+0*x.*y;
+      h = 0*x.*y;
     case 2
-      h = 0.*x.*y;
+      h = 1+0*x.*y;
     case 3
       h = 0.*x.*y;
     case 4

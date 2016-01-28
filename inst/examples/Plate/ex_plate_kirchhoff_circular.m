@@ -4,7 +4,9 @@
 % by Marco Pingaro                                                        %
 %                                                                         %
 %--------------------------------------------------------------------------
-clear all; close all; clc;
+clear; 
+close all; 
+clc;
 %--------------------------------------------------------------------------
 % DEFINITION OF GEOMETRY
 % Initial geometry
@@ -38,10 +40,12 @@ srf_r = srf_i;
 problem_data.geo_name = srf_r;
 %--------------------------------------------------
 % BOUNDARY CONDITIONS 
-problem_data.nmnn_sides  = [];            % Define Neumann conditions
-problem_data.drchlt_sides_u= [1 2 3 4];   % Define Dirichlet conditions
-problem_data.drchlt_sides_r= [1 2 3 4];   % Clamped bounds
+problem_data.nmnn_sides     = [];        % Define Neumann conditions
+problem_data.bound_sides    = [];        % Define free edges (Boundary integrals)
+problem_data.drchlt_sides_u = [1 2 3 4]; % Define Dirichlet conditions
+problem_data.drchlt_sides_r = [];        % Clamped bounds
 % Physical parameters
+problem_data.poisson = nu;
 problem_data.c_diff  = @(x, y) D*ones(size(x));
 problem_data.d_diff  = @(x, y) D*nu*ones(size(x));
 problem_data.e_diff  = @(x, y) 2*D*(1-nu)*ones(size(x));
@@ -51,18 +55,14 @@ problem_data.g = @(x, y, ind) zeros(size(x));
 problem_data.h = @(x, y, ind) zeros(size(x));
 %--------------------------------------------------
 % CHOICE OF THE DISCRETIZATION PARAMETERS
-%clear method_data
-%method_data.degree     = [srf_r.dim-1 srf_r.dim-1];% Degree of the splines
-%method_data.regularity = [srf_r.dim-2 srf_r.dim-2];% Regularity of the splines
-
-method_data.degree     = [3 3];                    % Degree of the splines
-method_data.regularity = [2 2];                    % Regularity of the splines
-method_data.nsub       = [21 21];                  % Number of subdivisions
-method_data.nquad      = [4 4];                    % Points for the Gaussian quadrature rule
+method_data.degree     = [2 2];                    % Degree of the splines
+method_data.regularity = [1 1];                    % Regularity of the splines
+method_data.nsub       = [20 20];                  % Number of subdivisions
+method_data.nquad      = [3 3];                    % Points for the Gaussian quadrature rule
 %-------------------------------------------------
 % CALL TO THE SOLVER
 [geometry, msh, space, u] =...
-    solve_bilaplace_2d_NURBS_iso (problem_data, method_data);
+    solve_bilaplace_GRADGRAD_2d_iso (problem_data, method_data);
 
     % solve_bilaplace_2d_NURBS_iso (problem_data, method_data);
     % solve_bilaplace_GRADGRAD_2d_iso (problem_data, method_data);
@@ -99,8 +99,8 @@ disp(msh.nel);      % numero elementi usato!
 disp(srf_r.dim-1);  % Degree B-Spline
 disp(srf_r.dim-2);  % Continuity
 max_spost = max(max(eu));
-%soluz_anal = p/(64*D)*( (5+nu)/(1+nu) ); % Simply supported
-soluz_anal = 1/64; % Clamped
+soluz_anal = p/(64*D)*( (5+nu)/(1+nu) ); % Simply supported
+%soluz_anal = 1/64; % Clamped
 soluz_rap1 = soluz_anal/max_spost;
 soluz_rap2 = abs((soluz_anal-max_spost)/max_spost);
 fprintf('Computational solution at center of the plate = %s \n', max_spost);
